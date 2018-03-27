@@ -78,6 +78,14 @@ define(['N/record','N/search'],
 				fieldId:	'itemname',
 				line:		i
 			});
+			if (recType == record.Type.INVOICE || recType == record.Type.RETURN_AUTHORIZATION) {
+				//Invoice record does not have item name as a field
+				//Look up item name
+				itemName = getItemName(itemId);
+			}
+			if (itemName == undefined) {
+				throw "Item name cannot be found for itemId: " + itemId;
+			}
 			if (invDetail) {
 				//Get invDetail
 				var serialNumbers = [];
@@ -142,20 +150,41 @@ define(['N/record','N/search'],
 					}
 					switch (recType) {
 						case record.Type.ITEM_RECEIPT :
+							log.debug({
+								title: 'record.Type.ITEM_RECEIPT',
+								details: recId + ', ' + recType + ', ' + arrSNid[0]
+							});
 							SNrec.setValue('custrecord_snr_item_receipt',recId);
 							break;
 						case record.Type.ITEM_FULFILLMENT :
+							log.debug({
+								title: 'record.Type.ITEM_FULFILLMENT',
+								details: recId + ', ' + recType + ', ' + arrSNid[0]
+							});
 							SNrec.setValue('custrecord_snr_item_fulfillment',recId);
+							SNrec.setValue('custrecord_snr_customer',newRecord.getValue('entity'));
 							break;
 						case record.Type.INVOICE :	//Same as Web Sale
+							log.debug({
+								title: 'record.Type.INVOICE',
+								details: recId + ', ' + recType + ', ' + arrSNid[0]
+							});
 						case record.Type.CASH_SALE :
+							log.debug({
+								title: 'record.Type.CASH_SALE',
+								details: recId + ', ' + recType + ', ' + arrSNid[0]
+							});
 							SNrec.setValue('custrecord_snr_invoice',recId);
 							break;
 						case record.Type.RETURN_AUTHORIZATION :
+							log.debug({
+								title: 'record.Type.RETURN_AUTHORIZATION',
+								details: recId + ', ' + recType + ', ' + arrSNid[0]
+							});
 							SNrec.setValue('custrecord_snr_return_auth',recId);
 							break;
 						default:
-							throw "No matching record type to " + recType;
+							throw "No matching record type to " + recType + ', ' + arrSNid[0];
 					}
 					SNrec.save();
 				}
@@ -185,5 +214,18 @@ define(['N/record','N/search'],
 			return true;
 		});
 		return results;
+	}
+	
+	function getItemName(itemId) {
+		var itemNameLookup = search.lookupFields({
+			type: 'item',
+			id:		itemId,
+			columns:	['itemId']
+		});
+		log.debug({
+			title: 'itemNameLookup',
+			details: JSON.stringify(itemNameLookup)
+		});
+		return itemNameLookup.itemId;
 	}
 });
