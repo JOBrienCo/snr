@@ -45,20 +45,21 @@ define(['N/record','N/search'],
 	 * @Since 2015.2
 	 */
 	function afterSubmit(scriptContext) {
-		var itemRectRec = scriptContext.newRecord;
-		var recId = itemRectRec.id;
+		var newRecord = scriptContext.newRecord;
+		var recType = newRecord.type;
+		var recId = newRecord.id;
 		log.debug({
-			title: 'recId',
-			details: recId
+			title: 'recId, recType',
+			details: recId + ', ' + recType
 		});
 		//Loop thru line items on Item Receipt
-		var numLines = itemRectRec.getLineCount('item');
+		var numLines = newRecord.getLineCount('item');
 		log.debug({
 			title: 'numLines',
 			details: numLines
 		});
 		for (var i=0; i<numLines; i++) {
-			var invDetail = itemRectRec.getSublistValue({
+			var invDetail = newRecord.getSublistValue({
 				sublistId:	'item',
 				fieldId:	'inventorydetail',
 				line:		i
@@ -67,12 +68,12 @@ define(['N/record','N/search'],
 				title: 'invDetail',
 				details: invDetail
 			});
-			var itemId = itemRectRec.getSublistValue({
+			var itemId = newRecord.getSublistValue({
 				sublistId:	'item',
 				fieldId:	'item',
 				line:		i
 			});
-			var itemName = itemRectRec.getSublistText({
+			var itemName = newRecord.getSublistText({
 				sublistId:	'item',
 				fieldId:	'itemname',
 				line:		i
@@ -114,18 +115,50 @@ define(['N/record','N/search'],
 					title: 'serialNumbers',
 					details: JSON.stringify(serialNumbers)
 				});
-				//Create S/N record(s)
+				
 				for (var j=0; j<serialNumbers.length; j++){
-					var SNrec = record.create({
-						type: 'customrecord_snr'
-					});
-					SNrec.setValue('custrecord_snr_sn',serialNumbers[j]);
-					SNrec.setValue('custrecord_snr_item',itemId);
-					SNrec.setValue('custrecord_snr_item_receipt',recId);
-					SNrec.setValue('name',serialNumbers[j] + '-' + itemName);
+					var recName = serialNumbers[j] + '-' + itemName;
+					//Find Serial Number Record
+					var SNrec;
+					var arrSNid = getSNRec(recName);
+					if (arrSNid.length == 0) {
+						//Create SN record
+						SNrec = record.create({
+							type: 'customrecord_snr'
+						});
+						SNrec.setValue('custrecord_snr_sn',serialNumbers[j]);
+						SNrec.setValue('custrecord_snr_item',itemId);
+						SNrec.setValue('name',recName);
+					}
+					else if (arrSNid.length > 1) {
+						//Multiple SN records found!  Error out
+						throw "Multiple SN records found! " + arrSNid.toString();
+					}
+					else {
+						SNrec = record.load({
+							type: 'customrecord_snr',
+							id: arrSNid[0]
+						});
+					}
+					switch (recType) {
+						case record.Type.ITEM_RECEIPT :
+							SNrec.setValue('custrecord_snr_item_receipt',recId);
+							break;
+						case record.Type.ITEM_FULFILLMENT :
+							SNrec.setValue('custrecord_snr_item_fulfillment',recId);
+							break;
+						case record.Type.INVOICE :	//Same as Web Sale
+						case record.Type.CASH_SALE :
+							SNrec.setValue('custrecord_snr_invoice',recId);
+							break;
+						case record.Type.RETURN_AUTHORIZATION :
+							SNrec.setValue('custrecord_snr_return_auth',recId);
+							break;
+						default:
+							throw "No matching record type to " + recType;
+					}
 					SNrec.save();
 				}
-
 			}
 		}
 	}
@@ -136,4 +169,21 @@ define(['N/record','N/search'],
 		afterSubmit: afterSubmit
 	};
 
+	function getSNRec(recName) {
+		var results = [];
+		var SNsearch = search.create({
+			type: 'customrecord_snr',
+			filters: search.createFilter({
+				name: 'name',
+				operator: 'IS',
+				values: recName
+			}),
+			columns: 'name'
+		});
+		SNsearch.run().each(function(result) {
+			results.push(result.id);
+			return true;
+		});
+		return results;
+	}
 });
