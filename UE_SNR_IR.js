@@ -73,20 +73,22 @@ define(['N/record','N/search'],
 				fieldId:	'item',
 				line:		i
 			});
-			var itemName = newRecord.getSublistText({
-				sublistId:	'item',
-				fieldId:	'itemname',
-				line:		i
-			});
-			if (recType == record.Type.INVOICE || recType == record.Type.RETURN_AUTHORIZATION) {
-				//Invoice record does not have item name as a field
-				//Look up item name
-				itemName = getItemName(itemId);
-			}
-			if (itemName == undefined) {
-				throw "Item name cannot be found for itemId: " + itemId;
-			}
+			
 			if (invDetail) {
+				//Get item name
+				var itemName = newRecord.getSublistText({
+					sublistId:	'item',
+					fieldId:	'itemname',
+					line:		i
+				});
+				if (recType == record.Type.INVOICE || recType == record.Type.RETURN_AUTHORIZATION) {
+					//Invoice record does not have item name as a field
+					//Look up item name
+					itemName = getItemName(itemId);
+				}
+				if (itemName == undefined) {
+					throw "Item name cannot be found for itemId: " + itemId;
+				}
 				//Get invDetail
 				var serialNumbers = [];
 				var inventorydetailSearchObj = search.create({
