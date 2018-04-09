@@ -92,7 +92,7 @@ define(['N/record','N/search'],
 				var inventorydetailSearchObj = search.create({
 					type: "inventorydetail",
 					filters: [
-						["internalid","anyof",itemId]
+						["internalid","anyof",invDetail]
 						],
 						columns: [
 							search.createColumn({
