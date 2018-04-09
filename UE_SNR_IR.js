@@ -2,6 +2,7 @@
  * @NApiVersion 2.x
  * @NScriptType UserEventScript
  * @NModuleScope SameAccount
+ * Word document added 4/9
  */
 define(['N/record','N/search'],
 		/**
