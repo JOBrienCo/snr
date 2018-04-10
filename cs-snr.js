@@ -39,9 +39,20 @@ function(message,format) {
      */
     function fieldChanged(scriptContext) {
     	var rec = scriptContext.currentRecord;
-    	if (scriptContext.fieldId == 'custrecord_snr_sn' || scriptContext.fieldId == 'custrecord_snr_item') {
+    	if (scriptContext.fieldId == 'custrecord_snr_sn') {
+    		//Native serial number field changed
+    		var nativeSerial = rec.getText('custrecord_snr_sn');
+    		if (nativeSerial != '') {
+    			rec.setValue('custrecord_snr_sn_freeform',nativeSerial);
+    			rec.getField('custrecord_snr_sn_freeform').isDisabled = true;
+    		}
+    		else {
+    			rec.getField('custrecord_snr_sn_freeform').isDisabled = false;
+    		}
+    	}
+    	if (scriptContext.fieldId == 'custrecord_snr_sn_freeform' || scriptContext.fieldId == 'custrecord_snr_item') {
     		//Change name field to match (serialnumber} - {itemnumber}
-    		var sn = rec.getText('custrecord_snr_sn');
+    		var sn = rec.getText('custrecord_snr_sn_freeform');
     		var item = rec.getText('custrecord_snr_item');
     		var nameField = rec.setValue(
     				{

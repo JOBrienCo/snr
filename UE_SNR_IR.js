@@ -137,7 +137,8 @@ define(['N/record','N/search'],
 						SNrec = record.create({
 							type: 'customrecord_snr'
 						});
-						SNrec.setValue('custrecord_snr_sn',serialNumbers[j]);
+						SNrec.setValue('custrecord_snr_sn_freeform',serialNumbers[j]);
+						SNrec.setText('custrecord_snr_sn',serialNumbers[j]);
 						SNrec.setValue('custrecord_snr_item',itemId);
 						SNrec.setValue('name',recName);
 					}
@@ -215,6 +216,10 @@ define(['N/record','N/search'],
 		SNsearch.run().each(function(result) {
 			results.push(result.id);
 			return true;
+		});
+		log.debug({
+			title: 'getSNrec',
+			details: 'records found: ' + results.length
 		});
 		return results;
 	}
