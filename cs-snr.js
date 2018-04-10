@@ -41,12 +41,12 @@ function(message,format) {
     	var rec = scriptContext.currentRecord;
     	if (scriptContext.fieldId == 'custrecord_snr_sn' || scriptContext.fieldId == 'custrecord_snr_item') {
     		//Change name field to match (serialnumber} - {itemnumber}
-    		var sn = rec.getValue('custrecord_snr_sn');
+    		var sn = rec.getText('custrecord_snr_sn');
     		var item = rec.getText('custrecord_snr_item');
     		var nameField = rec.setValue(
     				{
     					fieldId:	'name',
-    					value:		sn + '-' + item
+    					value:		sn + '/' + item
     				});
     	}
     	if (scriptContext.fieldId == 'custrecord_rs_customer' || scriptContext.fieldId == 'custrecord_rs_sale_date') {

@@ -128,7 +128,7 @@ define(['N/record','N/search'],
 				});
 				
 				for (var j=0; j<serialNumbers.length; j++){
-					var recName = serialNumbers[j] + '-' + itemName;
+					var recName = serialNumbers[j] + '/' + itemName;
 					//Find Serial Number Record
 					var SNrec;
 					var arrSNid = getSNRec(recName);
