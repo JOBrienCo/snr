@@ -67,6 +67,10 @@ function(record, transaction, url) {
             fieldId:    'location',
             value:        2
         });
+        recRA.setValue({
+        	fieldId:	'custbody_order_rep',
+        	value:		3
+        });
       log.debug({
           title: 'DEBUG',
         details: 'memo:test' 
