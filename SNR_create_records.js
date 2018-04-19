@@ -46,6 +46,7 @@ function(record, transaction, ui, dialog, message, purl, runtime, https) {
 		parameters.SNitem = SNitem;
 		parameters.user = runtime.getCurrentUser().id;
 		parameters.SNserial = SNserial.text;
+		parameters.SNserialId = SNserial.id;
 		parameters.SNcustomer = SNcust;
 		parameters.SNR = recordId;
 		parameters.SNRType = 'customrecord_snr';
