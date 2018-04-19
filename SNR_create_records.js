@@ -47,6 +47,8 @@ function(record, transaction, ui, dialog, message, purl, runtime, https) {
 		parameters.user = runtime.getCurrentUser().id;
 		parameters.SNserial = SNserial.text;
 		parameters.SNcustomer = SNcust;
+		parameters.SNR = recordId;
+		parameters.SNRType = 'customrecord_snr';
 		
 		console.log('Create records ' + SNitem + ' ' + JSON.stringify(SNserial) + ' ' + SNcust);
 		var output = purl.resolveScript({
