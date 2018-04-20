@@ -54,6 +54,7 @@ function(record, search) {
 		inventorynumberSearchObj.run().each(function(result){
 		   // .run().each has a limit of 4,000 results
 			inStock = result.getValue({name: 'isonhand'});
+			log.debug("inStock",inStock);
 			return true;
 			});
 		if (inStock) {
@@ -89,6 +90,7 @@ function(record, search) {
 		if (transactions.length>0) {
 			return false;
 		}
+		return true;
 	}
 	
 	function getSerialNumber(SNrecord) {

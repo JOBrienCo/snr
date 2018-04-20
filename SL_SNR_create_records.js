@@ -3,11 +3,11 @@
  * @NScriptType Suitelet
  * @NModuleScope SameAccount
  */
-define(['N/record', 'N/search'],
+define(['N/record', 'N/search', 'N/https', 'N/redirect'],
 /**
  * @param {record} record
  */
-function(record, search) {
+function(record, search, http, redirect) {
    
     /**
      * Definition of the Suitelet script trigger point.
@@ -52,10 +52,10 @@ function(record, search) {
 			title: 'DEBUG',
 			details: 'memo:test' 
 		});
-		recRA.setValue({
-			fieldId:    'memo',
-			value:        'test:made via script'
-		});
+		//recRA.setValue({
+		//	fieldId:    'memo',
+		//	value:        'test:made via script'
+		//});
 		recRA.selectNewLine({
 			sublistId:    'item'
 		});
@@ -129,7 +129,22 @@ function(record, search) {
 				details: recSNRId
 			});
 		}
-		
+		//Send user to newly created record
+		log.debug({
+			title: 'Debug',
+            details: 'redirect:start'
+		});
+		//redirect.toRecord({
+		context.response.write(
+				JSON.stringify({
+			type:		http.RedirectType.RECORD,
+			identifier:	record.Type.RETURN_AUTHORIZATION,
+			id:			recRAId
+		}));
+		log.debug({
+			title: 'Debug',
+            details: 'redirect:end**'
+		});
     }
     return {
     	onRequest: createReturn

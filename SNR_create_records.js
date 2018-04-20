@@ -22,6 +22,7 @@ function(record, transaction, ui, dialog, message, purl, runtime, https) {
 	}
 	function createReturnButtonClick() {
 		var url = new URL(window.location.href);
+		var redirectURL = url.origin;
 		var recordId = url.searchParams.get("id");
 		var recordType = url.searchParams.get("rectype");	//returns a type ID - not useful
 		log.debug({
@@ -66,7 +67,12 @@ function(record, transaction, ui, dialog, message, purl, runtime, https) {
 			title: 'Debug',
 			details: response
 		});
-
+		console.log(JSON.parse(response.body));
+		response = JSON.parse(response.body);
+		if (response.identifier == 'returnauthorization') {
+			redirectURL += '/app/accounting/transactions/rtnauth.nl?id=' + response.id;
+			window.open(redirectURL);
+		}
    }
     return {
         createReturnButtonClick : 	createReturnButtonClick
